@@ -1,0 +1,200 @@
+" configure expanding of tabs for various file types
+au BufRead,BufNewFile *.py set expandtab
+au BufRead,BufNewFile *.c set noexpandtab
+au BufRead,BufNewFile *.h set noexpandtab
+au BufRead,BufNewFile Makefile* set noexpandtab
+
+let mapleader=" "
+inoremap jk <Esc>
+
+" Split navigation
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+noremap <C-h> <C-w>h
+
+"Leader + y for yank to clipboard
+noremap <Leader>y "*y
+set relativenumber
+
+" Toggle relative line number
+nnoremap <leader>l :call ToggleRelNum()<CR>
+
+function! ToggleRelNum()
+    if &relativenumber
+        execute "set norelativenumber"
+    else
+        execute "set relativenumber"
+    endif
+endfunction
+
+set expandtab           " enter spaces when tab is pressed
+" set textwidth=120       " break lines when line length increases
+set tabstop=4           " use 4 spaces to represent tab
+set softtabstop=4
+set shiftwidth=4        " number of spaces to use for auto indent
+set autoindent          " copy indent from current line when starting a new line
+set smartindent
+set smarttab
+set expandtab
+set number
+set ignorecase
+set incsearch
+filetype plugin indent on
+set t_Co=256
+set background=dark
+set timeoutlen=1000 ttimeoutlen=0
+set noswapfile
+
+" make backspaces more powerfull
+set backspace=indent,eol,start
+
+set ruler                           " show line and column number
+syntax on               " syntax highlighting
+set showcmd             " show (partial) command in status line
+
+" Install vim-plug if not found.
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !eval "curl -fLo ${CURL_OPTS} ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+endif
+" Run PlugInstall if there are missing plugins.
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+\| endif
+" Install FZF if not found.
+if empty(glob('~/.fzf'))
+  !git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  !~/.fzf/install
+endif
+
+
+" MAKE SURE TO RUN brew install ripgrep on machine
+" and brew install bat
+
+" FZF files search mapped to leader + f.
+nnoremap <leader>f :<C-u>FZF<CR>
+" FZF setup for Rg ripgrep. Mapped to leader + s.
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case
+  \    -g "!{tags,babel.config.json,tsconfig.json,node_modules,.git,.hg,out}" -- '
+  \     .shellescape(<q-args>),
+  \   1, fzf#vim#with_preview(), <bang>0)
+nnoremap <leader>s :<C-u>Rg<CR>
+" FZF setup for Buf command. Mapped to leader + b.
+nnoremap <leader>b :<C-u>Buf<CR>
+" FZF display settings
+let g:fzf_preview_window = 'right:50%'
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6  }  }
+
+" Quickly insert an empty new line without entering insert mode
+nnoremap <silent> <leader>o :<C-u>call append(line("."),   repeat([""], v:count1))<CR>
+nnoremap <silent> <leader>O :<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>
+
+" plugin manager
+call plug#begin('~/.vim/plugged')
+Plug 'junegunn/fzf.vim'
+Plug '~/.fzf'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'arcticicestudio/nord-vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'preservim/nerdtree'
+Plug 'jiangmiao/auto-pairs'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries'  }
+Plug 'github/copilot.vim'
+
+call plug#end()
+" Use Tab for autocomplete selection
+" " use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
+" use enter to select
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+autocmd FileType go nmap <leader>t <Plug>(go-def-type)
+
+inoremap <silent><expr> <c-space> coc#refresh()
+
+let g:coc_node_path = '/usr/local/bin/node'
+
+" Extra local only plugins.
+if !empty(glob("$HOME/.vimplug_local"))
+    source $HOME/.vimplug_local
+endif
+
+" CoC Vim Doc on hover
+nnoremap <silent> <leader>h :call CocActionAsync('doHover')<cr>
+
+" GoTo code navigation
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+" Coc vim scroll pop up
+"inoremap <nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1, 1)\<cr>" : "\<Right>"
+"inoremap <nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0, -1)\<cr>" : "\<Left>"
+
+" Formatting selected code
+" xmap <leader>f  <Plug>(coc-format-selected)
+" nmap <leader>f  <Plug>(coc-format-selected)
+
+" Symbol renaming
+nmap <leader>rn <Plug>(coc-rename)
+
+" Nord colorscheme won't exist on initial install (until we run PlugInstall).
+" Need to use a terminal theme from Nord for Vim theme to work - can't use
+" apple terminal, but iTerm works
+:silent! colorscheme nord
+
+" FZF setup for Rg ripgrep. Mapped to leader + s.
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case
+  \    -g "!{tags,babel.config.json,tsconfig.json,node_modules,.git,.hg,out}" -- '
+  \     .shellescape(<q-args>),
+  \   1, fzf#vim#with_preview(), <bang>0)
+nnoremap <leader>s :<C-u>Rg<CR>
+" FZF setup for Buf command. Mapped to leader + b.
+nnoremap <leader>b :<C-u>Buf<CR>
+" FZF display settings
+let g:fzf_preview_window = 'right:50%'
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6  }  }
+
+" vim-go shortcuts
+let g:go_auto_type_info = 1
+autocmd FileType go nmap <leader>h <Plug>(go-referrers)
+set updatetime=100
+
+" NERDTree file explorer toggle shortcuts
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <C-s> :NERDTreeFind<CR>
+
+"set termguicolors
+
+"nnoremap jj <nop>
+"nnoremap hh <nop>
+"nnoremap kk <nop>
+"nnoremap ll <nop>

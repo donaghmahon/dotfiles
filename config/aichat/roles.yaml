@@ -1,0 +1,4 @@
+- name: base
+  prompt: >
+    Be brief in your response to the following question. Skip all pleasantries and get to the point.
+

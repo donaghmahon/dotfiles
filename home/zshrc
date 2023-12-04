@@ -1,0 +1,37 @@
+# If you come from bash you might have to change your $PATH.
+#export PATH=$HOME/bin:/usr/local/bin:$PATH
+#export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
+#export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
+
+
+##### Env Vars #####
+# Path to your oh-my-zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="Simple"
+export BAT_THEME="Nord"
+
+# Plugins
+plugins=(git tmux)
+
+source $ZSH/oh-my-zsh.sh
+
+# Aliases
+alias c="clear"
+alias chat="aichat"
+alias ls="exa"
+alias cat="bat"
+alias td="tmux detach"
+
+##### FZF #####
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Setting fd as the default source for fzf
+export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
+
+# To apply the command to CTRL-T as well
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+##### END FZF #####
+
+
+##### GOLANG #####
+export PATH=$PATH:$(go env GOPATH)/bin
+##### END GOLANG #####
