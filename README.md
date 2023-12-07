@@ -5,7 +5,9 @@ Script does not set ohmyzsh theme (sections commented out)
 Should take the commands in the Dockerfile and move into the script
 
 ```
-sudo apt update && apt install -y bat tree ripgrep unzip wget exa fd-find
+sudo apt update
+apt install 
+bat tree ripgrep unzip wget exa fd-find
 ```
 
 ```
