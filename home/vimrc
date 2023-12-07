@@ -198,3 +198,9 @@ nnoremap <C-s> :NERDTreeFind<CR>
 "nnoremap hh <nop>
 "nnoremap kk <nop>
 "nnoremap ll <nop>
+
+" Source custom configs (not under version control).
+if filereadable(glob("~/.vimrc.local"))
+  source ~/.vimrc.local
+endif
+
