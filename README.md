@@ -27,3 +27,10 @@ error opening vim :
 error in vim:
 vim-go: no package metadata for file file:
 
+### Distinguish remote machine
+Can edit the prompt of a remote machine in the machines ~/.zshrc.local
+```
+if [[ -n $SSH_CLIENT  ]] || [[ -n $SSH_TTY  ]]; then
+    export PROMPT='%{$fg_bold[red]%}%n@%m:%~%# %{$reset_color%}'
+fi
+```
