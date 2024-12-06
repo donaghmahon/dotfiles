@@ -2,7 +2,7 @@
 	insteadOf = https://github.com/
 [user]
 	name = Donagh Mahon
-    email = donagh.mahon@gmail.com
+    email = <email>@gmail.com
 
 [merge]
     tool = vimdiff
